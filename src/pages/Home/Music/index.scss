@@ -1,0 +1,214 @@
+// 旋转动画
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+// 重置样式
+ul, li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+i {
+  font-style: normal;
+}
+
+// 主容器样式
+.main {
+  width: 100%;
+  height: 80px;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+// 音乐播放器
+.music {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  position: relative;
+
+  // 封面区域
+  .logo {
+    height: 100%;
+    margin-left: 10px;
+    border-radius: 50%;
+    overflow: hidden;
+    img {
+      height: 100%;
+      cursor: pointer;
+
+      &.rotate {
+        animation: rotate 10s linear infinite;
+      }
+    }
+  }
+
+  // 歌曲信息区域
+  .all {
+    width: 260px;
+    height: 100%;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+
+    // 歌曲信息
+    .info {
+      display: flex;
+      align-items: center;
+
+      .songName {
+        color: #ffffff;
+        font-weight: 500;
+      }
+
+      .singerName {
+        color: #cccccc;
+        font-size: 12px;
+        font-weight: 400;
+        margin-left: 5px;
+      }
+    }
+    // 操作图标
+    .icon {
+      ul {
+        display: flex;
+        
+        li {
+          color: white;
+          padding-right: 15px;
+          cursor: pointer;
+
+          &:hover {
+            color: #ecad41;
+          }
+        }
+        .liked:hover {
+          color: red;
+        }
+      }
+    }
+  }
+
+  // 播放控制区域
+  .player {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    // 进度条
+    .progress {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: -5px; // 调整为负值使其上移
+      width: 100%;
+      max-width: 600px;
+
+      // 时间显示
+      .beginTime,
+      .endTime {
+        color: #ffffff;
+        font-size: 12px;
+        width: 40px;
+        text-align: center;
+        user-select: none;
+      }
+
+      // 进度条容器
+      .line {
+        position: relative;
+        flex: 1;
+        height: 4px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 2px;
+        margin: 0 10px;
+
+        // 进度条
+        .progress-bar {
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          background: #ec4141;
+          border-radius: 2px;
+          transition: width 0.1s linear;
+        }
+
+        // 进度点
+        .point {
+          position: absolute;
+          width: 12px;
+          height: 12px;
+          background: #ec4141;
+          border-radius: 50%;
+          border: 2px solid #fff;
+          transform: translate(-50%, -50%);
+          cursor: pointer;
+          transition: left 0.1s linear;
+          z-index: 2;
+        }
+
+        // 可拖动区域
+        .progress-range {
+          position: absolute;
+          left: 0;
+          top: -6px;
+          width: 100%;
+          height: 16px;
+          opacity: 0;
+          cursor: pointer;
+          z-index: 3;
+        }
+      }
+    }
+        .icon {
+            ul {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            ul li {
+                float: left;
+                cursor: pointer;
+                padding: 0 10px;
+            }
+        }
+        .progress {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            .beginTime {
+                color: #ffffff;
+                font-size: 12px;
+            }
+            .line {
+                position: relative;
+                width: 300px;
+                height: 2px;
+                background-color: #a3a3a3;
+                margin: 0 10px;
+                .point {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background-color: #ffffff;
+                    position: absolute;
+                    top: 0px;
+                    cursor: pointer;
+                }
+            }
+            .endTime {
+                color: #ffffff;
+                font-size: 12px;
+            }
+        }
+    }
+  }
