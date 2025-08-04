@@ -91,9 +91,9 @@ function Home() {
             itemHoverBg: "transparent",
             itemSelectedBg: "transparent",
             itemActiveBg: "transparent",
-            itemHoverColor: "#ffffff",
+            itemHoverColor: "orange",
             itemColor: "#8c8c8c",
-            itemSelectedColor: "#ffffff",
+            itemSelectedColor: "orange",
           },
           Input: {
             activeBorderColor: "#d9d9d9",

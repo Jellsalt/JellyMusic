@@ -10,27 +10,33 @@ import {
   MutedFilled,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { useRef, useEffect, useState } from "react";
-import { setIsPlaying } from "@/store/modules/player";
+import { useEffect, useState } from "react";
+import {
+  setIsPlaying,
+  setVolume,
+  setIsMuted,
+} from "@/store/modules/player";
 import ProgressBar from "@/components/ProgressBar";
 import { Slider, ConfigProvider } from "antd";
+import { useAudioContext } from "@/contexts/AudioContext";
 function Enjoy() {
   const dispatch = useDispatch();
-  // 音频引用
-  const audioRef = useRef(null);
   // 当前播放歌曲
   const song = useSelector((state) => state.song);
   // 播放状态
   const isPlaying = useSelector((state) => state.player.isPlaying);
+  const currentTime = useSelector((state) => state.player.currentTime);
+  const duration = useSelector((state) => state.player.duration);
+  const volume = useSelector((state) => state.player.volume);
+  const isMuted = useSelector((state) => state.player.isMuted);
   // 导航钩子
   const navigate = useNavigate();
-  // 进度条状态
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
+  // 进度条拖动状态
   const [isDragging, setIsDragging] = useState(false);
-  // 音量状态
-  const [volume, setVolume] = useState(0.7);
-  const [isMuted, setIsMuted] = useState(false);
+  // 跳转歌曲ID
+  const [currentSongId, setCurrentSongId] = useState(null);
+  // 使用音频上下文
+  const { audioMethods } = useAudioContext();
   // 跳转到主页
   const gotoHome = () => {
     navigate("/home");
@@ -38,58 +44,32 @@ function Enjoy() {
 
   // 播放暂停
   const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
     dispatch(setIsPlaying(!isPlaying));
     console.log("当前歌曲信息:", song);
   };
 
-  // 更新当前播放时间;
-  const handleTimeUpdate = () => {
-    setCurrentTime(audioRef.current.currentTime);
-  };
-
-  // 设置音频持续时间;
-  const handleDurationChange = () => {
-    setDuration(audioRef.current.duration);
-  };
-
   // 拖动进度条改变播放位置;
   const handleProgressChange = (value) => {
-    if (!audioRef.current) return;
     setIsDragging(true);
-    setCurrentTime(value);
-    audioRef.current.currentTime = value;
+    audioMethods.seek(value);
   };
 
   // 处理拖动结束
   const handleDragEnd = () => {
     setIsDragging(false);
-    if (audioRef.current && isPlaying) {
-      audioRef.current.play();
-    }
   };
 
   // 音量调节处理
   const handleVolumeChange = (value) => {
-    if (!audioRef.current) return;
-    setVolume(value);
-    setIsMuted(value === 0);
-    audioRef.current.volume = value;
+    dispatch(setVolume(value));
+    dispatch(setIsMuted(value === 0));
+    audioMethods.setVolume(value);
   };
 
   // 切换静音状态
   const toggleMute = () => {
-    if (!audioRef.current) return;
-    setIsMuted(!isMuted);
-    if (!isMuted) {
-      audioRef.current.volume = 0;
-    } else {
-      audioRef.current.volume = volume;
-    }
+    dispatch(setIsMuted(!isMuted));
+    audioMethods.toggleMute();
   };
 
   // 格式化时间
@@ -98,14 +78,6 @@ function Enjoy() {
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
-
-  useEffect(() => {
-    if (isPlaying && !isDragging && audioRef.current) {
-      audioRef.current.play();
-    } else if (!isPlaying && audioRef.current) {
-      audioRef.current.pause();
-    }
-  }, [isPlaying, isDragging]);
 
   // 监听拖动结束事件
   useEffect(() => {
@@ -121,66 +93,33 @@ function Enjoy() {
     };
   }, []);
 
-  // 初始化音量和监听音量变化
+  // 监听歌曲变化
   useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = volume;
+    if (song && song.id && !isPlaying) {
+      dispatch(setIsPlaying(true));
     }
-  }, [volume]);
-
-  // 监听静音状态变化
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-    }
-  }, [isMuted, volume]);
-
-  // 监听歌曲变化，更新音频源
-  useEffect(() => {
-    if (audioRef.current && song && (song.url || song.src)) {
-      const newSrc = song.url || song.src;
-      // 只有当音频源发生变化时才更新
-      if (audioRef.current.src !== newSrc) {
-        audioRef.current.src = newSrc;
-        // 重置当前时间
-        setCurrentTime(0);
-        // 如果当前是播放状态，则继续播放
-        if (isPlaying) {
-          audioRef.current
-            .play()
-            .catch((err) => console.error("播放失败:", err));
-        }
-      }
-    }
-  }, [song, isPlaying]);
+  }, [song, isPlaying, dispatch]);
 
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: "#ffffffff",
-        },
-        components: {
-          Slider: {
-            dotSize: 6,
-            handleSize: 6,
-            handleSizeHover: 8,
-            controlSize: 1,
-            handleLineWidth: 1,
-            handleLineWidthHover: 1,
-            railSize: 3,
+      <ConfigProvider
+        theme={{
+          token: {
+            colorPrimary: "#ffffffff",
           },
-        },
-      }}
-    >
-      <div className="enjoyContainer">
-        <audio
-          src={song?.url || song?.src || ""}
-          ref={audioRef}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleDurationChange}
-          onError={(e) => console.error("音频加载错误:", e)}
-        />
+          components: {
+            Slider: {
+              dotSize: 6,
+              handleSize: 6,
+              handleSizeHover: 8,
+              controlSize: 1,
+              handleLineWidth: 1,
+              handleLineWidthHover: 1,
+              railSize: 3,
+            },
+          },
+        }}
+      >
+        <div className="enjoyContainer">
         <div className="music-big">
           <div className="music-header">
             <div className="back">

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useState } from "react";
 import ProgressBar from "@/components/ProgressBar";
 import "./index.scss";
 import { useNavigate } from "react-router-dom";
@@ -14,39 +14,52 @@ import {
   MutedOutlined,
   PauseOutlined,
 } from "@ant-design/icons";
+import { Slider } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import { setIsPlaying } from "@/store/modules/player";
+import {
+  setIsPlaying,
+  setVolume,
+  setIsMuted,
+} from "@/store/modules/player";
+import { useAudioContext } from "@/contexts/AudioContext";
 
 const Music = () => {
   // 当前播放的歌曲
   const song = useSelector((state) => state.song);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-  // 歌曲是否收藏
-  const [isLiked, setIsLiked] = useState(false);
   // 播放器状态
   const isPlaying = useSelector((state) => state.player.isPlaying);
-  // 静音状态
-  const [isMuted, setIsMuted] = useState(false);
-
+  const currentTime = useSelector((state) => state.player.currentTime);
+  const duration = useSelector((state) => state.player.duration);
+  const volume = useSelector((state) => state.player.volume);
+  const isMuted = useSelector((state) => state.player.isMuted);
+  // 歌曲是否收藏
+  const [isLiked, setIsLiked] = useState(false);
+  // 调节音量
+  const [volumnVisible, setVolumnVisible] = useState(false);
   const dispatch = useDispatch();
-  // 音频引用
-  const audioRef = useRef(null);
   // 导航钩子
   const navigate = useNavigate();
+  // 使用音频上下文
+  const { audioMethods } = useAudioContext();
 
+  // 音量调节处理
+  const handleVolumeChange = (value) => {
+    dispatch(setVolume(value));
+    dispatch(setIsMuted(value === 0));
+    audioMethods.setVolume(value);
+  };
   // 跳转到纯享界面
   const gotoEnjoy = () => {
     navigate("/enjoy");
   };
 
+  // 音量调节切换
+  const toggleVolumnVisible = () => {
+    setVolumnVisible(!volumnVisible);
+  };
+
   // 播放/暂停切换
   const togglePlay = () => {
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play();
-    }
     dispatch(setIsPlaying(!isPlaying));
     console.log("当前歌曲信息:", song);
   };
@@ -58,63 +71,19 @@ const Music = () => {
 
   // 切换静音
   const toggleMute = () => {
-    setIsMuted(!isMuted);
-    audioRef.current.muted = !isMuted;
-  };
-
-  // 更新当前播放时间;
-  const handleTimeUpdate = () => {
-    setCurrentTime(audioRef.current.currentTime);
-  };
-
-  // 设置音频持续时间;
-  const handleDurationChange = () => {
-    setDuration(audioRef.current.duration);
+    dispatch(setIsMuted(!isMuted));
+    audioMethods.toggleMute();
   };
 
   // 拖动进度条改变播放位置;
   const handleProgressChange = (value) => {
-    if (!audioRef.current) return;
-    setCurrentTime(value);
-    audioRef.current.currentTime = value;
+    audioMethods.seek(value);
   };
 
   // 监听 song 的变化，更新当前歌曲信息
   useEffect(() => {
-    if (song && song.id) {
-      setCurrentTime(0); // 重置当前时间
-      setDuration(0);
+    if (song && song.id && !isPlaying) {
       dispatch(setIsPlaying(true)); // 设置为播放状态
-    } else if (!song) {
-      // 当没有歌曲时，重置状态
-      setCurrentTime(0);
-      setDuration(0);
-      dispatch(setIsPlaying(false));
-      if (audioRef.current) {
-        audioRef.current.src = "";
-      }
-    }
-  }, [song, dispatch]);
-
-  // 音频源改变时播放
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.src = song?.url;
-
-      // 只有在有用户交互后才尝试播放
-      if (isPlaying) {
-        audioRef.current.play().catch((err) => {
-          console.error("播放失败:", err);
-          // 如果是自动播放限制，提示用户
-          if (err.name === "NotAllowedError") {
-            dispatch(setIsPlaying(false));
-            // 可以选择显示一个提示，但不要用alert影响用户体验
-            console.warn(
-              "由于浏览器策略限制，无法自动播放音频，请点击播放按钮开始播放"
-            );
-          }
-        });
-      }
     }
   }, [song, isPlaying, dispatch]);
 
@@ -128,16 +97,6 @@ const Music = () => {
   return (
     <div className="main">
       <div className="music">
-        <audio
-          src={song?.url || song?.src || ""}
-          ref={audioRef}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleDurationChange}
-          onEnded={() => {
-            console.log("播放结束");
-          }}
-        />
-
         <div className={"logo"} onClick={gotoEnjoy}>
           <img
             src={song?.info?.al?.picUrl || song.cover}
@@ -195,12 +154,31 @@ const Music = () => {
                 <StepForwardFilled style={{ fontSize: "20px" }} />
               </li>
               <li
-                onClick={toggleMute}
+                className="volumn"
+                onClick={toggleVolumnVisible}
                 style={{
                   fontSize: "18px",
                   paddingLeft: "50px",
                 }}
               >
+                {volumnVisible && (
+                  <div className="slider-all">
+                    <Slider
+                      min={0}
+                      max={1}
+                      step={0.01}
+                      defaultValue={volume}
+                      onChange={handleVolumeChange}
+                      tooltip={{ formatter: null }}
+                      vertical={true}
+                    />
+                    {isMuted ? (
+                      <MutedOutlined onClick={toggleMute} />
+                    ) : (
+                      <SoundOutlined onClick={toggleMute} />
+                    )}
+                  </div>
+                )}
                 {isMuted ? <MutedOutlined /> : <SoundOutlined />}
               </li>
             </ul>
