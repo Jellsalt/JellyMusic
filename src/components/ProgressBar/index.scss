@@ -1,0 +1,41 @@
+.progress {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  position: relative;
+  height: 2px;
+  background-color: #595959;
+  border-radius: 1px;
+}
+
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.1s linear;
+  background-color: #ffffff;
+}
+
+.point {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 10px;
+  height: 10px;
+  background-color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: left 0.1s linear;
+}
+
+.progress-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}

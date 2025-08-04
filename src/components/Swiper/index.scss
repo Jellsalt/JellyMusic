@@ -8,7 +8,6 @@
     width: 100%;
     height: 100%;
     border-radius: 10px;
-    overflow: hidden;
 }
 
 .swiper {
@@ -16,74 +15,73 @@
     justify-content: center;
     align-items: center;
     position: relative;
-    height: 142px;
+    height: 150px;
     width: 100%;
+    overflow: hidden;
     .in {
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        transition: transform 5s ease;
+        width: 1200px;
+        margin: 0 60px;
+    }
+    .in li {
         height: 100%;
-        width: 980px;
-        ul {
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        ul li {
-            float: left;
-            height: 100%;
-            padding: 0 10px;
-            cursor: pointer;
+        width: 140px;
+        cursor: pointer;
+        .img-wrap {
             position: relative;
-            .img-wrap {
-                position: relative;
+            height: 100%;
+            img {
                 height: 100%;
-                display: block;
+                width: 100%;
+                object-fit: cover;
+                transition: all 0.5s;
+            }
+            .cover-mask {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.3);
+                opacity: 0;
+                z-index: 1;
+                transition: all 0.5s;
+            }
+            .play-btn {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                color: #ffffff;
+                opacity: 0;
+                z-index: 2;
+            }
+            &:hover {
                 img {
-                    height: 100%;
-                    display: block;
-                    transition: all 0.5s;
+                    transform: scale(1.05);
                 }
                 .cover-mask {
-                    position: absolute;
-                    left: 0;
-                    top: 0;
-                    width: 100%;
-                    height: 100%;
-                    background: rgba(0,0,0,0.3);
-                    opacity: 0;
-                    z-index: 1;
-                    transition: all 0.5s;
+                    opacity: 1;
+                    transform: scale(1.05);
                 }
                 .play-btn {
-                    position: absolute;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    width: 40px;
-                    height: 40px;
-                    border-radius: 50%;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    font-size: 40px;
-                    color: #ffffff;
-                    opacity: 0;
-                    z-index: 2;
-                }
-                &:hover {
-                    img {
-                        transform: scale(1.05);
-                    }
-                    .cover-mask {
-                        opacity: 1;
-                        transform: scale(1.05);
-                    }
-                    .play-btn {
-                        opacity: 1;
-                    }
+                    opacity: 1;
                 }
             }
         }
     }
+
     .pre,
     .next {
         position: absolute;
@@ -98,7 +96,6 @@
         background: url('https://s2.music.126.net/style/web2/img/index/banner.png?da381766f1f17ce4268c21267b262a73') no-repeat 0px -360px;
         &:hover {
             background: url('https://s2.music.126.net/style/web2/img/index/banner.png?da381766f1f17ce4268c21267b262a73') no-repeat 0px -430px;
-            background-color: #333333;
         }
     }
     .next {
@@ -106,46 +103,31 @@
         background: url('https://s2.music.126.net/style/web2/img/index/banner.png?da381766f1f17ce4268c21267b262a73') no-repeat 0px -508px;
         &:hover {
             background: url('https://s2.music.126.net/style/web2/img/index/banner.png?da381766f1f17ce4268c21267b262a73') no-repeat 0px -578px;
-            background-color: #333333;
         }
     }
     .bottom {
-        width: 100%;
-        height: 40px;
-        background-color: rgba(255, 255, 255, 0);
         position: absolute;
         bottom: 0;
-        text-align: center;
-        line-height: 40px;
-        ul {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        width: 100%;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        li {
+            float: left;
+            width: 8px;
+            height: 8px;
+            background-color: #979797;
+            border: 1px solid #b5b5b5;
+            border-radius: 50%;
+            margin: 0 5px;
+            z-index: 20;
+            cursor: pointer;
         }
     }
 }
 
-
-.swiper .bottom ul li {
-    float: left;
-    width: 8px;
-    height: 8px;
-    background-color: #979797;
-    border: 1px solid #b5b5b5;
-    border-radius: 50%;
-    margin: 0 5px;
-    cursor: pointer;
-}
-
-.swiper .bottom ul .active,
-.swiper .bottom ul li:hover {
+.swiper .bottom .active,
+.swiper .bottom li:hover {
     background-color: #f8f8f8;
-}
-
-.swiper .in img {
-    transition: all 0.5s;
 }

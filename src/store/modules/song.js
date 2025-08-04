@@ -3,8 +3,12 @@ import { getSongUrl, getSongDetail } from "@/apis";
 const songStore = createSlice({
   name: "song",
   initialState: {
-    id: "",
-    url: "https://ws6.stream.qqmusic.qq.com/O400001RtoVO13I1ej.ogg?guid=2333318974&vkey=D03D3B2A0C4997337B19E5DE41114EB0C78B16A112E4EBF5E8101BF80F384CACBF1C008072D60FEC5AE646EF5909E522D13EDE1339120510__v2b94c10f&uin=211135200&fromtag=120532",
+    id: 0,
+    url: "http://m701.music.126.net/20250802173652/835c2da530e829b06083bcbe4fa81bb8/jdymusic/obj/wo3DlMOGwrbDjj7DisKw/61266707431/b872/cdaf/25cb/c07134c64ef10356c57f99f49c82578f.mp3?vuutv=iqQK/zS1m36CAnFLV2+8aj1BlAv2lUzf2g6CABsTYu4dKPvxuWBKx9/Mj2n3BtUTzK3Ok1GKjdcAy3fzq3IN7GrIshcfWH7oencDKrrAGvUHd4ZLxX3g+7/Wb3QL7cG0CPEbYRRhKu1tcEQn+AgjFZwo21mGxSYc1ENXYXUgFxo=",
+    cover:
+      "https://y.qq.com/music/photo_new/T002R300x300M000001R6tiK4PNAEo_1.jpg?max_age=2592000",
+    artist: "喻言",
+    title: "Oh Tell Me Why",
     info: {},
   },
   // 同步修改方法
@@ -44,6 +48,7 @@ const fetchSongInfo = (id) => {
     try {
       const res = await getSongDetail(id);
       // 提交同步 action 进行歌曲信息的存入
+      console.log(res);
       dispatch(setInfo(res.data.songs[0]));
     } catch (error) {
       console.error("获取歌曲信息失败:", error);

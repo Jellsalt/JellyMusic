@@ -68,6 +68,9 @@ function Home() {
   return (
     <ConfigProvider
       theme={{
+        token: {
+          colorPrimary: "#ffffffff",
+        },
         components: {
           token: {
             colorPrimaryActive: "#d9d9d9",
@@ -115,7 +118,10 @@ function Home() {
               trigger={null}
               collapsible
               collapsed={collapsed}
-              style={{ backgroundColor: "#ffffff99" }}
+              style={{
+                background:
+                  "linear-gradient(0deg, #ffffcc, #91ff0099, #ffffcc)",
+              }}
             >
               <div
                 className="demo-logo-vertical"
@@ -144,7 +150,7 @@ function Home() {
                   {
                     key: "1",
                     icon: <HeartOutlined />,
-                    label: "我的喜欢",
+                    label: "发现音乐",
                   },
                   {
                     key: "2",
@@ -169,7 +175,12 @@ function Home() {
                 ]}
               />
             </Sider>
-            <Layout style={{ background: "#ffffff" }}>
+            <Layout
+              style={{
+                background:
+                  "linear-gradient(180deg, #ffffcc, #91ff0077, #ffffcc)",
+              }}
+            >
               <Header
                 style={{
                   lineHeight: "64px",
@@ -213,7 +224,7 @@ function Home() {
                   }}
                 >
                   <Avatar />
-                  <p style={{ color: "white" }}>username</p>
+                  <p style={{ color: "#565656" }}>username</p>
                   <Popconfirm
                     title="Are you sure to logout ?"
                     okText="yes"
@@ -254,7 +265,7 @@ function Home() {
           <Footer
             style={{
               textAlign: "center",
-              backgroundColor: "#000000c4",
+              background: "linear-gradient(180deg, #ffffcc, #a1ff00)",
               margin: 0,
               padding: 0,
             }}

@@ -32,7 +32,7 @@ i {
 
   // 封面区域
   .logo {
-    height: 100%;
+    height: 80%;
     margin-left: 10px;
     border-radius: 50%;
     overflow: hidden;
@@ -50,7 +50,7 @@ i {
   .all {
     width: 260px;
     height: 100%;
-    padding: 5px 10px;
+    padding: 10px 10px;
     display: flex;
     flex-direction: column;
 
@@ -58,14 +58,16 @@ i {
     .info {
       display: flex;
       align-items: center;
-
+      color: #565656;
       .songName {
-        color: #ffffff;
+        color: #565656;
         font-weight: 500;
       }
-
+      .sep {
+        padding: 0 5px;
+      }
       .singerName {
-        color: #cccccc;
+        color: #565656;
         font-size: 12px;
         font-weight: 400;
         margin-left: 5px;
@@ -75,18 +77,14 @@ i {
     .icon {
       ul {
         display: flex;
-        
+        padding-top: 5px;
         li {
-          color: white;
+          color: #565656;
           padding-right: 15px;
           cursor: pointer;
-
           &:hover {
-            color: #ecad41;
+            color: orange;
           }
-        }
-        .liked:hover {
-          color: red;
         }
       }
     }
@@ -103,112 +101,40 @@ i {
     flex-direction: column;
     align-items: center;
     justify-content: center;
+
+    // 控制图标
+    .icon {
+      ul {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #565656;
+      }
+      ul li {
+        cursor: pointer;
+        padding: 0 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
     // 进度条
-    .progress {
+    .progress-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: -5px; // 调整为负值使其上移
       width: 100%;
-      max-width: 600px;
-
+      max-width: 500px;
       // 时间显示
       .beginTime,
       .endTime {
-        color: #ffffff;
+        color: #565656;
         font-size: 12px;
         width: 40px;
         text-align: center;
         user-select: none;
       }
-
-      // 进度条容器
-      .line {
-        position: relative;
-        flex: 1;
-        height: 4px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 2px;
-        margin: 0 10px;
-
-        // 进度条
-        .progress-bar {
-          position: absolute;
-          left: 0;
-          top: 0;
-          height: 100%;
-          background: #ec4141;
-          border-radius: 2px;
-          transition: width 0.1s linear;
-        }
-
-        // 进度点
-        .point {
-          position: absolute;
-          width: 12px;
-          height: 12px;
-          background: #ec4141;
-          border-radius: 50%;
-          border: 2px solid #fff;
-          transform: translate(-50%, -50%);
-          cursor: pointer;
-          transition: left 0.1s linear;
-          z-index: 2;
-        }
-
-        // 可拖动区域
-        .progress-range {
-          position: absolute;
-          left: 0;
-          top: -6px;
-          width: 100%;
-          height: 16px;
-          opacity: 0;
-          cursor: pointer;
-          z-index: 3;
-        }
-      }
-    }
-        .icon {
-            ul {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            ul li {
-                float: left;
-                cursor: pointer;
-                padding: 0 10px;
-            }
-        }
-        .progress {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            .beginTime {
-                color: #ffffff;
-                font-size: 12px;
-            }
-            .line {
-                position: relative;
-                width: 300px;
-                height: 2px;
-                background-color: #a3a3a3;
-                margin: 0 10px;
-                .point {
-                    width: 10px;
-                    height: 10px;
-                    border-radius: 50%;
-                    background-color: #ffffff;
-                    position: absolute;
-                    top: 0px;
-                    cursor: pointer;
-                }
-            }
-            .endTime {
-                color: #ffffff;
-                font-size: 12px;
-            }
-        }
     }
   }
+}

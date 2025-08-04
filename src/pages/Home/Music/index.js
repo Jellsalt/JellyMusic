@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import ProgressBar from "@/components/ProgressBar";
 import "./index.scss";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,24 +18,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { setIsPlaying } from "@/store/modules/player";
 
 const Music = () => {
-  // 默认播放列表
-  const playlist = [
-    {
-      id: 0,
-      title: "Oh Tell Me Why",
-      artist: "喻言",
-      cover:
-        "https://y.qq.com/music/photo_new/T002R300x300M000001R6tiK4PNAEo_1.jpg?max_age=2592000",
-      src: "https://ws6.stream.qqmusic.qq.com/O400001RtoVO13I1ej.ogg?guid=2333318974&vkey=D03D3B2A0C4997337B19E5DE41114EB0C78B16A112E4EBF5E8101BF80F384CACBF1C008072D60FEC5AE646EF5909E522D13EDE1339120510__v2b94c10f&uin=211135200&fromtag=120532",
-    },
-  ];
-
+  // 当前播放的歌曲
   const song = useSelector((state) => state.song);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  // 当前播放的歌曲状态
-  const [currentSong, setCurrentSong] = useState(playlist[currentSongIndex]);
   // 歌曲是否收藏
   const [isLiked, setIsLiked] = useState(false);
   // 播放器状态
@@ -75,18 +62,6 @@ const Music = () => {
     audioRef.current.muted = !isMuted;
   };
 
-  // 上一首;
-  const prevSong = () => {
-    const newIndex = (currentSongIndex - 1 + playlist.length) % playlist.length;
-    setCurrentSongIndex(newIndex);
-  };
-
-  // 下一首;
-  const nextSong = () => {
-    const newIndex = (currentSongIndex + 1) % playlist.length;
-    setCurrentSongIndex(newIndex);
-  };
-
   // 更新当前播放时间;
   const handleTimeUpdate = () => {
     setCurrentTime(audioRef.current.currentTime);
@@ -98,11 +73,50 @@ const Music = () => {
   };
 
   // 拖动进度条改变播放位置;
-  const handleProgressChange = (e) => {
-    const newTime = e.target.value;
-    setCurrentTime(newTime);
-    audioRef.current.currentTime = newTime;
+  const handleProgressChange = (value) => {
+    if (!audioRef.current) return;
+    setCurrentTime(value);
+    audioRef.current.currentTime = value;
   };
+
+  // 监听 song 的变化，更新当前歌曲信息
+  useEffect(() => {
+    if (song && song.id) {
+      setCurrentTime(0); // 重置当前时间
+      setDuration(0);
+      dispatch(setIsPlaying(true)); // 设置为播放状态
+    } else if (!song) {
+      // 当没有歌曲时，重置状态
+      setCurrentTime(0);
+      setDuration(0);
+      dispatch(setIsPlaying(false));
+      if (audioRef.current) {
+        audioRef.current.src = "";
+      }
+    }
+  }, [song, dispatch]);
+
+  // 音频源改变时播放
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.src = song?.url;
+
+      // 只有在有用户交互后才尝试播放
+      if (isPlaying) {
+        audioRef.current.play().catch((err) => {
+          console.error("播放失败:", err);
+          // 如果是自动播放限制，提示用户
+          if (err.name === "NotAllowedError") {
+            dispatch(setIsPlaying(false));
+            // 可以选择显示一个提示，但不要用alert影响用户体验
+            console.warn(
+              "由于浏览器策略限制，无法自动播放音频，请点击播放按钮开始播放"
+            );
+          }
+        });
+      }
+    }
+  }, [song, isPlaying, dispatch]);
 
   // 格式化时间
   const formatTime = (time) => {
@@ -111,72 +125,41 @@ const Music = () => {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  // 监听 song 的变化，更新当前歌曲信息
-  useEffect(() => {
-    if (song.id) {
-      console.log("当前歌曲信息:", song.info.name);
-      const newCover = song?.info?.al?.picUrl || currentSong.cover;
-      const newTitle = song?.info?.name || currentSong.title;
-      const newArtist = song?.info?.ar[0]?.name || currentSong.artist;
-      const newUrl = song?.url || currentSong.src;
-      setCurrentSong({
-        id: song.id,
-        title: newTitle,
-        artist: newArtist,
-        cover: newCover,
-        src: newUrl,
-      });
-      setCurrentSongIndex(0); // 重置索引
-      setCurrentTime(0); // 重置当前时间
-      setDuration(0);
-      if (audioRef.current) {
-        audioRef.current.src = newUrl;
-        audioRef.current.play();
-      }
-      dispatch(setIsPlaying(true)); // 设置为播放状态
-    }
-  }, [song]);
-
-  // 音频源改变时播放
-  // useEffect(() => {
-  //   if (audioRef.current) {
-  //     audioRef.current.src = currentSong.src;
-  //     if (isPlaying) {
-  //       audioRef.current.play();
-  //     }
-  //   }
-  // }, [currentSong, isPlaying]);
-
   return (
     <div className="main">
       <div className="music">
         <audio
-          src={song?.url ? song.url : currentSong.src}
+          src={song?.url || song?.src || ""}
           ref={audioRef}
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleDurationChange}
-          onEnded={nextSong}
+          onEnded={() => {
+            console.log("播放结束");
+          }}
         />
 
-        <div className="logo" onClick={gotoEnjoy}>
+        <div className={"logo"} onClick={gotoEnjoy}>
           <img
-            src={currentSong.cover}
-            alt={currentSong.title}
-            className={!isPlaying ? "" : "rotate"}
+            src={song?.info?.al?.picUrl || song.cover}
+            alt={song?.info?.al?.name || song.title}
+            className={isPlaying && "rotate"}
           />
         </div>
         {/* 歌曲信息 */}
         <div className="all">
           <div className="info">
-            <span className="songName">{currentSong.title}</span>
-            <span className="singerName"> - {currentSong.artist}</span>
+            <span className="songName">
+              {song?.info?.al?.name || song.title}
+            </span>
+            <span className="sep"> - </span>
+            <span className="singerName">{song.artist}</span>
           </div>
           {/* 喜欢、评论、更多操作 */}
           <div className="icon">
             <ul>
-              <li className="liked" onClick={toggleLike}>
+              <li onClick={toggleLike}>
                 {isLiked ? (
-                  <HeartFilled style={{ color: "red" }} />
+                  <HeartFilled style={{ color: "orange" }} />
                 ) : (
                   <HeartOutlined />
                 )}
@@ -198,32 +181,23 @@ const Music = () => {
                 <MutedOutlined
                   style={{
                     fontSize: "18px",
-                    color: "#f5f5f5",
                     paddingRight: "50px",
                   }}
                 />
               </li>
               <li>
-                <StepBackwardFilled
-                  style={{ fontSize: "20px", color: "#ffffff" }}
-                />
+                <StepBackwardFilled style={{ fontSize: "20px" }} />
               </li>
-              <li
-                onClick={togglePlay}
-                style={{ fontSize: "32px", color: "#ffffff" }}
-              >
+              <li onClick={togglePlay} style={{ fontSize: "32px" }}>
                 {isPlaying ? <PauseOutlined /> : <CaretRightFilled />}
               </li>
               <li>
-                <StepForwardFilled
-                  style={{ fontSize: "20px", color: "#ffffff" }}
-                />
+                <StepForwardFilled style={{ fontSize: "20px" }} />
               </li>
               <li
                 onClick={toggleMute}
                 style={{
                   fontSize: "18px",
-                  color: "#f5f5f5",
                   paddingLeft: "50px",
                 }}
               >
@@ -231,38 +205,13 @@ const Music = () => {
               </li>
             </ul>
           </div>
-          <div className="progress">
+          <div className="progress-wrapper">
             <div className="beginTime">{formatTime(currentTime)}</div>
-            <div
-              className="line"
-              style={{
-                position: "relative",
-                width: "240px",
-                margin: "0 8px",
-                display: "inline-block",
-              }}
-            >
-              <div
-                className="point"
-                style={{
-                  left: `${duration ? (currentTime / duration) * 100 : 0}%`,
-                }}
-              ></div>
-              <div
-                className="progress-bar"
-                style={{
-                  width: `${duration ? (currentTime / duration) * 100 : 0}%`,
-                }}
-              ></div>
-              <input
-                type="range"
-                min="0"
-                max={duration}
-                value={currentTime}
-                onChange={handleProgressChange}
-                className="progress-range"
-              />
-            </div>
+            <ProgressBar
+              currentTime={currentTime}
+              duration={duration}
+              onProgressChange={handleProgressChange}
+            />
             <div className="endTime">{formatTime(duration || 0)}</div>
           </div>
         </div>
