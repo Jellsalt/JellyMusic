@@ -7,7 +7,7 @@ const playerStore = createSlice({
     currentTime: 0,
     duration: 0,
     volume: 0.7,
-    isMuted: false
+    isMuted: false,
   },
   // 同步修改方法
   reducers: {
@@ -25,11 +25,12 @@ const playerStore = createSlice({
     },
     setIsMuted(state, action) {
       state.isMuted = action.payload;
-    }
+    },
   },
 });
 
-const { setIsPlaying, setCurrentTime, setDuration, setVolume, setIsMuted } = playerStore.actions;
+const { setIsPlaying, setCurrentTime, setDuration, setVolume, setIsMuted } =
+  playerStore.actions;
 const playerReducer = playerStore.reducer;
 
 export { setIsPlaying, setCurrentTime, setDuration, setVolume, setIsMuted };

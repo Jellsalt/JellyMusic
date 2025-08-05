@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ProgressBar from "@/components/ProgressBar";
 import "./index.scss";
 import { useNavigate } from "react-router-dom";
@@ -16,11 +16,7 @@ import {
 } from "@ant-design/icons";
 import { Slider } from "antd";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setIsPlaying,
-  setVolume,
-  setIsMuted,
-} from "@/store/modules/player";
+import { setIsPlaying, setVolume, setIsMuted } from "@/store/modules/player";
 import { useAudioContext } from "@/contexts/AudioContext";
 
 const Music = () => {
@@ -61,7 +57,6 @@ const Music = () => {
   // 播放/暂停切换
   const togglePlay = () => {
     dispatch(setIsPlaying(!isPlaying));
-    console.log("当前歌曲信息:", song);
   };
 
   // 切换喜欢状态
@@ -79,13 +74,6 @@ const Music = () => {
   const handleProgressChange = (value) => {
     audioMethods.seek(value);
   };
-
-  // 监听 song 的变化，更新当前歌曲信息
-  useEffect(() => {
-    if (song && song.id && !isPlaying) {
-      dispatch(setIsPlaying(true)); // 设置为播放状态
-    }
-  }, [song, isPlaying, dispatch]);
 
   // 格式化时间
   const formatTime = (time) => {

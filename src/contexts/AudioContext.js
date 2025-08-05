@@ -1,6 +1,10 @@
-import React, { createContext, useRef, useContext, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setIsPlaying, setCurrentTime, setDuration } from '@/store/modules/player';
+import React, { createContext, useRef, useContext, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  setIsPlaying,
+  setCurrentTime,
+  setDuration,
+} from "@/store/modules/player";
 
 // 创建音频上下文
 const AudioContext = createContext(null);
@@ -10,21 +14,23 @@ export const AudioProvider = ({ children }) => {
   // 创建音频引用
   const audioRef = useRef(new Audio());
   const dispatch = useDispatch();
-  
+
   // 从Redux获取状态
-  const song = useSelector(state => state.song);
-  const isPlaying = useSelector(state => state.player.isPlaying);
-  
+  const song = useSelector((state) => state.song);
+  const isPlaying = useSelector((state) => state.player.isPlaying);
+
   // 监听歌曲变化
   useEffect(() => {
     if (song && song.url) {
       // 只有当音频源变化时才更新
       if (audioRef.current.src !== song.url) {
+        console.log("更换歌曲");
         audioRef.current.src = song.url;
         dispatch(setCurrentTime(0));
       }
     } else if (!song) {
-      audioRef.current.src = '';
+      audioRef.current.src = "";
+      console.log("暂无播放歌曲");
       dispatch(setCurrentTime(0));
       dispatch(setDuration(0));
       dispatch(setIsPlaying(false));
@@ -34,11 +40,13 @@ export const AudioProvider = ({ children }) => {
   // 监听播放状态变化
   useEffect(() => {
     if (isPlaying) {
-      audioRef.current.play().catch(err => {
-        console.error('播放失败:', err);
-        if (err.name === 'NotAllowedError') {
+      audioRef.current.play().catch((err) => {
+        console.error("播放失败:", err);
+        if (err.name === "NotAllowedError") {
           dispatch(setIsPlaying(false));
-          console.warn('由于浏览器策略限制，无法自动播放音频，请点击播放按钮开始播放');
+          console.warn(
+            "由于浏览器策略限制，无法自动播放音频，请点击播放按钮开始播放"
+          );
         }
       });
     } else {
@@ -62,27 +70,27 @@ export const AudioProvider = ({ children }) => {
 
     // 音频播放结束
     const handleEnded = () => {
-      console.log('播放结束');
+      console.log("播放结束");
       // 这里可以添加播放结束后的逻辑
     };
 
     // 监听错误
     const handleError = (e) => {
-      console.error('音频错误:', e);
+      console.error("音频错误:", e);
     };
 
     // 添加事件监听器
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('loadedmetadata', handleDurationChange);
-    audio.addEventListener('ended', handleEnded);
-    audio.addEventListener('error', handleError);
+    audio.addEventListener("timeupdate", handleTimeUpdate);
+    audio.addEventListener("loadedmetadata", handleDurationChange);
+    audio.addEventListener("ended", handleEnded);
+    audio.addEventListener("error", handleError);
 
     // 清理函数
     return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('loadedmetadata', handleDurationChange);
-      audio.removeEventListener('ended', handleEnded);
-      audio.removeEventListener('error', handleError);
+      audio.removeEventListener("timeupdate", handleTimeUpdate);
+      audio.removeEventListener("loadedmetadata", handleDurationChange);
+      audio.removeEventListener("ended", handleEnded);
+      audio.removeEventListener("error", handleError);
     };
   }, [dispatch]);
 
@@ -98,7 +106,7 @@ export const AudioProvider = ({ children }) => {
     },
     toggleMute: () => {
       audioRef.current.muted = !audioRef.current.muted;
-    }
+    },
   };
 
   return (
@@ -112,7 +120,7 @@ export const AudioProvider = ({ children }) => {
 export const useAudioContext = () => {
   const context = useContext(AudioContext);
   if (context === null) {
-    throw new Error('useAudioContext must be used within an AudioProvider');
+    throw new Error("useAudioContext must be used within an AudioProvider");
   }
   return context;
 };

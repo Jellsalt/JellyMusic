@@ -36,3 +36,8 @@ npm start
 1. 确保网易云音乐 API 服务先启动
 2. 如果遇到跨域问题，可以在 NeteaseCloudMusicApi 服务中配置 CORS
 3. 某些高级功能可能需要登录网易云音乐账号
+
+### context audio
+使用 useRef 来创建 audio : audio 不会影响组件外观
+useRef 不触发组件的渲染
+

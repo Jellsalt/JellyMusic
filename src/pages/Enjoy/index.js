@@ -10,12 +10,7 @@ import {
   MutedFilled,
 } from "@ant-design/icons";
 import { useSelector, useDispatch } from "react-redux";
-import { useEffect, useState } from "react";
-import {
-  setIsPlaying,
-  setVolume,
-  setIsMuted,
-} from "@/store/modules/player";
+import { setIsPlaying, setVolume, setIsMuted } from "@/store/modules/player";
 import ProgressBar from "@/components/ProgressBar";
 import { Slider, ConfigProvider } from "antd";
 import { useAudioContext } from "@/contexts/AudioContext";
@@ -31,10 +26,6 @@ function Enjoy() {
   const isMuted = useSelector((state) => state.player.isMuted);
   // 导航钩子
   const navigate = useNavigate();
-  // 进度条拖动状态
-  const [isDragging, setIsDragging] = useState(false);
-  // 跳转歌曲ID
-  const [currentSongId, setCurrentSongId] = useState(null);
   // 使用音频上下文
   const { audioMethods } = useAudioContext();
   // 跳转到主页
@@ -50,13 +41,7 @@ function Enjoy() {
 
   // 拖动进度条改变播放位置;
   const handleProgressChange = (value) => {
-    setIsDragging(true);
     audioMethods.seek(value);
-  };
-
-  // 处理拖动结束
-  const handleDragEnd = () => {
-    setIsDragging(false);
   };
 
   // 音量调节处理
@@ -79,47 +64,26 @@ function Enjoy() {
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
   };
 
-  // 监听拖动结束事件
-  useEffect(() => {
-    const handleMouseUp = () => handleDragEnd();
-    const handleTouchEnd = () => handleDragEnd();
-
-    window.addEventListener("mouseup", handleMouseUp);
-    window.addEventListener("touchend", handleTouchEnd);
-
-    return () => {
-      window.removeEventListener("mouseup", handleMouseUp);
-      window.removeEventListener("touchend", handleTouchEnd);
-    };
-  }, []);
-
-  // 监听歌曲变化
-  useEffect(() => {
-    if (song && song.id && !isPlaying) {
-      dispatch(setIsPlaying(true));
-    }
-  }, [song, isPlaying, dispatch]);
-
   return (
-      <ConfigProvider
-        theme={{
-          token: {
-            colorPrimary: "#ffffffff",
+    <ConfigProvider
+      theme={{
+        token: {
+          colorPrimary: "#ffffffff",
+        },
+        components: {
+          Slider: {
+            dotSize: 6,
+            handleSize: 6,
+            handleSizeHover: 8,
+            controlSize: 1,
+            handleLineWidth: 1,
+            handleLineWidthHover: 1,
+            railSize: 3,
           },
-          components: {
-            Slider: {
-              dotSize: 6,
-              handleSize: 6,
-              handleSizeHover: 8,
-              controlSize: 1,
-              handleLineWidth: 1,
-              handleLineWidthHover: 1,
-              railSize: 3,
-            },
-          },
-        }}
-      >
-        <div className="enjoyContainer">
+        },
+      }}
+    >
+      <div className="enjoyContainer">
         <div className="music-big">
           <div className="music-header">
             <div className="back">
@@ -200,7 +164,7 @@ function Enjoy() {
             )}
             <Slider
               className="volumn-slider"
-              defaultValue={0.7}
+              defaultValue={volume}
               onChange={handleVolumeChange}
               min={0}
               max={1}
