@@ -1,4 +1,4 @@
-import { request } from "@/utils";
+import { request } from "@/utils/request";
 
 // 获取歌手全部歌曲
 // 必选参数 id: 歌手 id

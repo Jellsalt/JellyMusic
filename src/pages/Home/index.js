@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { SearchProvider, useSearchContext } from "@/contexts/SearchContext";
 import Music from "./Music";
 import {
   MenuFoldOutlined,
@@ -23,27 +24,19 @@ import {
   ConfigProvider,
 } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { searchMusic } from "../../apis";
+
 const { Header, Sider, Content, Footer } = Layout;
 
 function Home() {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(true);
   const [keywords, setKeywords] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const { executeSearch } = useSearchContext();
 
   // 搜索歌曲
   const handleSearch = async () => {
     if (!keywords.trim()) return;
-    try {
-      const result = await searchMusic(keywords);
-      console.log("搜索结果:", result.data.result);
-      if (result.data.code === 200) {
-        setSearchResults(result.data.result);
-      }
-    } catch (error) {
-      console.error("搜索失败:", error);
-    }
+    await executeSearch(keywords);
     navigate("");
   };
 
@@ -253,12 +246,7 @@ function Home() {
                   justifyContent: "center",
                 }}
               >
-                <Outlet
-                  context={{
-                    songs: searchResults.songs,
-                    songCount: searchResults.songCount,
-                  }}
-                />
+                <Outlet />
               </Content>
             </Layout>
           </Layout>

@@ -1,11 +1,5 @@
 import { Button, Form, Input, Row, Col } from "antd";
-import {
-  getCodeAPI,
-  loginAPI,
-  loginStatusAPI,
-  getAccountAPI,
-  refreshLoginAPI,
-} from "@/apis/user";
+import { getCodeAPI, loginAPI } from "@/apis/user";
 import { useNavigate } from "react-router-dom";
 import "./index.scss";
 function Captcha() {
@@ -29,10 +23,6 @@ function Captcha() {
       // 验证验证码登录
       const loginRes = await loginAPI(value);
       console.log("登录结果:", loginRes);
-      // const loginStatus = await loginStatusAPI();
-      // console.log("登录状态", loginStatus);
-      // const loginRefresh = await refreshLoginAPI();
-      // console.log("刷新状态", loginRefresh);
       navigate("/home");
     } catch (error) {
       console.error("登录失败:", error);

@@ -1,4 +1,4 @@
-import { request } from "@/utils";
+import { request, request2 } from "@/utils";
 
 // 获取验证码
 // phone: {phone: "手机号"}
@@ -41,6 +41,22 @@ export function logoutAPI() {
 export function getAccountAPI() {
   return request({
     url: "/user/account",
+    method: "GET",
+  });
+}
+
+// 1. 登录请求
+export function loginPassAPI(FormData) {
+  return request2({
+    url: "/authorizations",
+    method: "POST",
+    data: FormData,
+  });
+}
+// 2. 获取用户信息
+export function getProfileAPI() {
+  return request2({
+    url: "/user/profile",
     method: "GET",
   });
 }

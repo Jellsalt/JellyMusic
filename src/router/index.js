@@ -1,10 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
-import Home from "../pages/Home";
+
 import Start from "../pages/Start";
-import Login from "../pages/Login";
-import Search from "../pages/Home/Search";
-import Like from "../pages/Home/Like";
-import Enjoy from "../pages/Enjoy";
+import { AuthRoute } from "@/components/AuthRoute";
+import { lazy, Suspense } from "react";
+
+const Home = lazy(() => import("@/pages/Home"));
+const Login = lazy(() => import("@/pages/Login"));
+const Search = lazy(() => import("@/pages/Home/Search"));
+const Like = lazy(() => import("@/pages/Home/Like"));
+const Enjoy = lazy(() => import("@/pages/Enjoy"));
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -12,25 +17,47 @@ const router = createBrowserRouter([
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <Suspense fallback={"loading..."}>
+        <Login />
+      </Suspense>
+    ),
   },
   {
     path: "/home",
-    element: <Home />,
+    element: (
+      <AuthRoute>
+        <Suspense fallback={"loading..."}>
+          <Home />
+        </Suspense>
+      </AuthRoute>
+    ),
     children: [
       {
         index: true,
-        element: <Search />,
+        element: (
+          <Suspense fallback={"loading..."}>
+            <Search />
+          </Suspense>
+        ),
       },
       {
         path: "like",
-        element: <Like />,
+        element: (
+          <Suspense fallback={"loading..."}>
+            <Like />
+          </Suspense>
+        ),
       },
     ],
   },
   {
     path: "enjoy",
-    element: <Enjoy />,
+    element: (
+      <Suspense fallback={"loading..."}>
+        <Enjoy />
+      </Suspense>
+    ),
   },
 ]);
 export default router;

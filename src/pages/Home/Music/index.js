@@ -85,11 +85,11 @@ const Music = () => {
   return (
     <div className="main">
       <div className="music">
-        <div className={"logo"} onClick={gotoEnjoy}>
+        <div className="logo" onClick={gotoEnjoy}>
           <img
             src={song?.info?.al?.picUrl || song.cover}
             alt={song?.info?.al?.name || song.title}
-            className={isPlaying && "rotate"}
+            className={isPlaying ? "rotate" : ""}
           />
         </div>
         {/* 歌曲信息 */}
